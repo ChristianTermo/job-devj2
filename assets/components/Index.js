@@ -66,11 +66,10 @@ const Index = props => {
       <Dropdown
         label="Genres"
         dismissOnClick={false}
-        onChange={() => handleClick(item.id)}
       >
 
         {genres.map((item, key) => (
-          <DropdownItem key={key} {...item} 
+          <DropdownItem key={key} {...item} onChange={() => handleClick(item.id)}
           />
         ))}
       </Dropdown>
