@@ -1,65 +1,63 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Rating, Spinner, Dropdown } from 'flowbite-react';
-import { async } from 'regenerator-runtime';
 
 const Index = props => {
   const [movies, setMovies] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchMovies = () => {
+  const fetchMovies = useCallback(() => {
     setLoading(true);
 
-    return fetch('/api/movies')
-      .then(response => response.json())
-      .then(data => {
-        setMovies(data.movies);
+    fetch("/api/movies")
+      .then((res) => res.json())
+      .then((res) => {
+        setMovies(res.movies);
+        setLoading(false);
+        setLoading(false);
+      }) 
+      .catch((error) => {
+        console.error("error /api/movies", error);
         setLoading(false);
       });
-  }
+  }, [setLoading, setMovies]);
 
-  /*const fetchFilteredMovies = async (e) => {
-    const genre = e
-    const response = await fetch(`api/movies/genre/${genre}`);
-    const data = await response.json();
-    setFiltered(data.filtered);
-    <MovieList>
-      {filtered.map((item, key) => (
-        <MovieItem key={key} {...item} />
-      ))}
-    </MovieList>;
-  }*/
-
-  const fetchGenres = () => {
-    return fetch('api/genres')
-      .then(response => response.json())
-      .then(data => {
-        setGenres(data.genres);
+  const fetchGenres = useCallback(() => {
+    fetch("/api/genres")
+      .then((res) => res.json())
+      .then((res) => {
+        setGenres(res.genres);
       })
-  }
+      .catch((error) => {
+        console.error("error /api/genres", error);
+      });
+  }, [setGenres]);
 
-  useCallback(function handleChange(e) {
-    const value = e.target.value;
-    const fetchFilteredMovies = async () => {
-      const response = await fetch(`api/movies/genre/${value}`);
-      const data = await response.json();
-      setFiltered(data.filtered);
-      <MovieList>
-        {filtered.map((item, key) => (
-          <MovieItem key={key} {...item} />
-        ))}
-      </MovieList>;
-    }
-  });
+  const fetchFilteredMovies = useCallback((value) => {
+    fetch(`api/movies/genre/${value}`)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log("res.filtered", res.filtered);
+        setMovies(res.filtered);
+      })
+      .catch((error) => {
+        console.error("error /api/movies/genre", error);
+      });
+  }, [setMovies]);
 
+  const handleClick = useCallback((id) => {
+    console.log('id', id);
+    fetchFilteredMovies(id);
+  }, [fetchFilteredMovies]);
 
   useEffect(() => {
     fetchMovies();
-  }, []);
-
-  useEffect(() => {
     fetchGenres();
+
+    return () => {
+      setMovies([]);
+      setGenres([]);
+    }
   }, []);
 
   return (
@@ -68,25 +66,11 @@ const Index = props => {
       <Dropdown
         label="Genres"
         dismissOnClick={false}
-        value={filtered}
-        onChange={useCallback(function handleChange(e) {
-          const value = e.target.value;
-          console.log(value);
-          const fetchFilteredMovies = async () => {
-            const response = await fetch(`api/movies/genre/${value}`);
-            const data = await response.json();
-            setFiltered(data.filtered);
-            <MovieList>
-              {filtered.map((item, key) => (
-                <MovieItem key={key} {...item} />
-              ))}
-            </MovieList>;
-          }
-        })}
+        onChange={() => handleClick(item.id)}
       >
 
         {genres.map((item, key) => (
-          <DropdownItem key={key} {...item}
+          <DropdownItem key={key} {...item} 
           />
         ))}
       </Dropdown>
@@ -104,6 +88,7 @@ const Index = props => {
 const DropdownItem = props => {
   return (
     <Dropdown.Item
+      onChange={props.onChange}
     >
       {props.id}
     </Dropdown.Item>
