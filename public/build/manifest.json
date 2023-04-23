@@ -2,5 +2,10 @@
   "build/app.css": "/build/app.css",
   "build/app.js": "/build/app.js",
   "build/runtime.js": "/build/runtime.js",
-  "build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-eddf8c.js": "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-eddf8c.js"
+  "build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-eddf8c.js": "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-eddf8c.js",
+  "build/vendors-node_modules_flowbite-react_lib_esm_index_js-node_modules_react-dom_client_js-node_mo-095850.js": "/build/vendors-node_modules_flowbite-react_lib_esm_index_js-node_modules_react-dom_client_js-node_mo-095850.js",
+  "build/vendors-node_modules_react-dom_client_js-node_modules_react-router-dom_dist_index_js.js": "/build/vendors-node_modules_react-dom_client_js-node_modules_react-router-dom_dist_index_js.js",
+  "build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-520ff7.js": "/build/vendors-node_modules_core-js_modules_es_array_from_js-node_modules_core-js_modules_es_array_i-520ff7.js",
+  "build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_arr-a8d267.js": "/build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_arr-a8d267.js",
+  "build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_arr-ba9e7c.js": "/build/vendors-node_modules_core-js_modules_es_array_for-each_js-node_modules_core-js_modules_es_arr-ba9e7c.js"
 }

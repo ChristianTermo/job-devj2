@@ -1,133 +1,211 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Rating, Spinner } from 'flowbite-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Rating, Spinner, Dropdown } from 'flowbite-react';
+import { async } from 'regenerator-runtime';
 
 const Index = props => {
-    const [movies, setMovies] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchMovies = () => {
-        setLoading(true);
+  const fetchMovies = () => {
+    setLoading(true);
 
-        return fetch('/api/movies')
-            .then(response => response.json())
-            .then(data => {
-                setMovies(data.movies);
-                setLoading(false);
-            });
+    return fetch('/api/movies')
+      .then(response => response.json())
+      .then(data => {
+        setMovies(data.movies);
+        setLoading(false);
+      });
+  }
+
+  /*const fetchFilteredMovies = async (e) => {
+    const genre = e
+    const response = await fetch(`api/movies/genre/${genre}`);
+    const data = await response.json();
+    setFiltered(data.filtered);
+    <MovieList>
+      {filtered.map((item, key) => (
+        <MovieItem key={key} {...item} />
+      ))}
+    </MovieList>;
+  }*/
+
+  const fetchGenres = () => {
+    return fetch('api/genres')
+      .then(response => response.json())
+      .then(data => {
+        setGenres(data.genres);
+      })
+  }
+
+  useCallback(function handleChange(e) {
+    const value = e.target.value;
+    const fetchFilteredMovies = async () => {
+      const response = await fetch(`api/movies/genre/${value}`);
+      const data = await response.json();
+      setFiltered(data.filtered);
+      <MovieList>
+        {filtered.map((item, key) => (
+          <MovieItem key={key} {...item} />
+        ))}
+      </MovieList>;
     }
+  });
 
-    useEffect(() => {
-        fetchMovies();
-    }, []);
 
-    return (
-        <Layout>
-          <Heading />
+  useEffect(() => {
+    fetchMovies();
+  }, []);
 
-          <MovieList loading={loading}>
-            {movies.map((item, key) => (
-              <MovieItem key={key} {...item} />
-            ))}
-          </MovieList>
-        </Layout>
-    );
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+
+  return (
+    <Layout>
+      <Heading />
+      <Dropdown
+        label="Genres"
+        dismissOnClick={false}
+        value={filtered}
+        onChange={useCallback(function handleChange(e) {
+          const value = e.target.value;
+          console.log(value);
+          const fetchFilteredMovies = async () => {
+            const response = await fetch(`api/movies/genre/${value}`);
+            const data = await response.json();
+            setFiltered(data.filtered);
+            <MovieList>
+              {filtered.map((item, key) => (
+                <MovieItem key={key} {...item} />
+              ))}
+            </MovieList>;
+          }
+        })}
+      >
+
+        {genres.map((item, key) => (
+          <DropdownItem key={key} {...item}
+          />
+        ))}
+      </Dropdown>
+
+      <br></br>
+      <MovieList loading={loading}>
+        {movies.map((item, key) => (
+          <MovieItem key={key} {...item} />
+        ))}
+      </MovieList>
+    </Layout>
+  )
+};
+
+const DropdownItem = props => {
+  return (
+    <Dropdown.Item
+    >
+      {props.id}
+    </Dropdown.Item>
+  );
 };
 
 const Layout = props => {
-    return (
-        <section className="bg-white dark:bg-gray-900">
-          <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-            {props.children}
-          </div>
-        </section>
-    );
+  return (
+    <section className="bg-white dark:bg-gray-900">
+      <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+        {props.children}
+      </div>
+    </section>
+  );
 };
 
 const Heading = props => {
-    return (
-        <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
-          <h1 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-            Movie Collection
-          </h1>
+  return (
+    <div className="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">
+      <h1 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+        Movie Collection
+      </h1>
 
-          <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-            Explore the whole collection of movies
-          </p>
-        </div>
-    );
+      <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
+        Explore the whole collection of movies
+      </p>
+    </div>
+  );
 };
 
 const MovieList = props => {
-    if (props.loading) {
-        return (
-            <div className="text-center">
-              <Spinner size="xl" />
-            </div>
-        );
-    }
-
+  if (props.loading) {
     return (
-        <div className="grid gap-4 md:gap-y-8 xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3">
-          {props.children}
-        </div>
+      <div className="text-center">
+        <Spinner size="xl" />
+      </div>
     );
+  }
+
+  return (
+    <div className="grid gap-4 md:gap-y-8 xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3">
+      {props.children}
+    </div>
+  );
 };
 
 const MovieItem = props => {
-    return (
-        <div className="flex flex-col w-full h-full rounded-lg shadow-md lg:max-w-sm">
-          <div className="grow">
-            <img
-              className="object-cover w-full h-60 md:h-80"
-              src={props.image}
-              alt={props.title}
-              loading="lazy"
-            />
-          </div>
+  return (
 
-          <div className="grow flex flex-col h-full p-3">
-            <div className="grow mb-3 last:mb-0">
-              {props.year || props.rating
-                ? <div className="flex justify-between align-middle text-gray-900 text-xs font-medium mb-2">
-                    <span>{props.year}</span>
+    <div className="flex flex-col w-full h-full rounded-lg shadow-md lg:max-w-sm">
+      <div className="grow">
+        <img
+          className="object-cover w-full h-60 md:h-80"
+          src={props.image}
+          alt={props.title}
+          loading="lazy"
+        />
+      </div>
 
-                    {props.rating
-                      ? <Rating>
-                          <Rating.Star />
+      <div className="grow flex flex-col h-full p-3">
+        <div className="grow mb-3 last:mb-0">
+          {props.year || props.rating
+            ? <div className="flex justify-between align-middle text-gray-900 text-xs font-medium mb-2">
+              <span>{props.year}</span>
 
-                          <span className="ml-0.5">
-                            {props.rating}
-                          </span>
-                        </Rating>
-                      : null
-                    }
-                  </div>
+              {props.rating
+                ? <Rating>
+                  <Rating.Star />
+
+                  <span className="ml-0.5">
+                    {props.rating}
+                  </span>
+                </Rating>
                 : null
               }
-
-              <h3 className="text-gray-900 text-lg leading-tight font-semibold mb-1">
-                {props.title}
-              </h3>
-
-              <p className="text-gray-600 text-sm leading-normal mb-4 last:mb-0">
-                {props.plot.substr(0, 80)}...
-              </p>
             </div>
+            : null
+          }
 
-            {props.wikipedia_url
-              ? <Button
-                  color="light"
-                  size="xs"
-                  className="w-full"
-                  onClick={() => window.open(props.wikipedia_url, '_blank')}
-                >
-                  More
-                </Button>
-              : null
-            }
-          </div>
+          <h3 className="text-gray-900 text-lg leading-tight font-semibold mb-1">
+            {props.title}
+          </h3>
+
+          <p className="text-gray-600 text-sm leading-normal mb-4 last:mb-0">
+            {props.plot.substr(0, 80)}...
+          </p>
         </div>
-    );
+
+        {props.wikipedia_url
+          ? <Button
+            color="light"
+            size="xs"
+            className="w-full"
+            onClick={() => window.open(props.wikipedia_url, '_blank')}
+          >
+            More
+          </Button>
+          : null
+        }
+      </div>
+    </div>
+  );
 };
 
 export default Index;
